@@ -67,7 +67,7 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
   };
 
   return (
-    <div className="relative bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+    <div className="relative bg-gradient-to-br from-white/50 to-white/10 backdrop-blur-2xl p-4 rounded-xl shadow-2xl shadow-gray-300/50 border border-white/30">
       <button
         onClick={() => onDeleteField(field.id)}
         className="absolute top-4 right-3 text-red-400 hover:text-red-600 focus:outline-none group"
@@ -75,40 +75,40 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
       >
         <Trash2 className="w-5 h-5 stroke-current group-hover:fill-current" strokeWidth={1.5} />
       </button>
-      <div className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100 flex items-center">
+      <div className="font-bold text-lg mb-2 text-gray-800 flex items-center">
         {localField.label}
-        <span className="ml-2 text-sm italic text-gray-500 dark:text-gray-400 font-normal">({field.originalName})</span>
+        <span className="ml-2 text-sm italic text-gray-600 font-normal">({field.originalName})</span>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Label</label>
+          <label className="block text-sm font-medium text-gray-500">Label</label>
           <input
             type="text"
             name="label"
             value={localField.label}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100"
+            className="mt-1 block w-full px-3 py-2 bg-white/30 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">ID</label>
+          <label className="block text-sm font-medium text-gray-500">ID</label>
           <input
             type="text"
             value={localField.id}
             disabled
-            className="mt-1 block w-full px-3 py-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm sm:text-sm text-gray-500 dark:text-gray-400"
+            className="mt-1 block w-full px-3 py-2 bg-gray-100/30 border border-gray-300 rounded-md shadow-sm sm:text-sm text-gray-600"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+          <label className="block text-sm font-medium text-gray-500">Description</label>
           <textarea
             name="description"
             value={localField.description || ''}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100"
-          />
+            className="mt-1 block w-full px-3 py-2 bg-white/30 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800"
+          ></textarea>
         </div>
-        <div className='mt-2'>
+        <div>
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -117,7 +117,7 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
               onChange={handleChange}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <label htmlFor="required" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">Required</label>
+            <label htmlFor="required" className="ml-2 block text-sm text-gray-800">Required</label>
           </div>
           {localField.type === 'array' && localField.items?.type === 'string' && (
             <div className="flex items-center mt-2">
@@ -128,7 +128,7 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
                 onChange={handleChange}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="dynamic" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">Dynamic</label>
+              <label htmlFor="dynamic" className="ml-2 block text-sm text-gray-800">Dynamic</label>
             </div>
           )}
           <div className="flex items-center mt-2">
@@ -146,20 +146,20 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
                   }}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="load_schema" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">Load Schema on Change</label>
+                <label htmlFor="load_schema" className="ml-2 block text-sm text-gray-800">Load Schema on Change</label>
               </>
             )}
           </div>
         </div>
         {localField.ui_options?.ui_widget === 'SelectWidget' && localField.originalName !== 'Dynamic Load Select' && (
           <div className="col-span-full">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Choices (JSON Array)</label>
+            <label className="block text-sm font-medium text-gray-500">Choices (JSON Array)</label>
             <textarea
               name="choices"
               value={JSON.stringify(localField.choices?.values || [], null, 2)}
               onChange={handleChange}
               rows={6}
-              className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 font-mono"
+              className="mt-1 block w-full px-3 py-2 bg-white/30 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800 font-mono"
             />
           </div>
         )}

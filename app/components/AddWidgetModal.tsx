@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { X } from 'lucide-react';
 
 const widgets = [
   {
@@ -144,37 +145,42 @@ const AddWidgetModal = ({ isOpen, onClose, onAddWidget }: AddWidgetModalProps) =
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Add Widget</h2>
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50"
+      onClick={onClose} // Close modal when clicking outside
+    >
+      <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-6 w-full max-w-lg"
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
+      >
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Add Widget</h2>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer"
+          aria-label="Close Modal"
+        >
+          <X className="w-5 h-5" />
+        </button>
         <input
           type="text"
           placeholder="Search widgets..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-2 mb-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100"
+          className="w-full px-3 py-1 mb-4 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-800"
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredWidgets.map((widget) => (
             <div
               key={widget.name}
-              className="flex items-center p-3 rounded-lg cursor-pointer bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+              className="flex items-center p-2 rounded-md cursor-pointer bg-gray-100 hover:bg-gray-200"
               onClick={() => {
                 onAddWidget(widget);
                 onClose();
               }}
             >
-              <div className="mr-3 text-gray-600 dark:text-gray-300">{widget.icon}</div>
-              <span className="text-lg text-gray-900 dark:text-gray-100">{widget.name}</span>
+              <div className="mr-2 text-gray-600">{widget.icon}</div>
+              <span className="text-base text-gray-800">{widget.name}</span>
             </div>
           ))}
         </div>
-        <button
-          className="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full"
-          onClick={onClose}
-        >
-          Close
-        </button>
       </div>
     </div>
   );

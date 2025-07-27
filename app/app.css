@@ -7,9 +7,15 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  background-color: #f5f8fa; /* Cooler off-white */
+  background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+  background-size: 20px 20px;
+  @apply text-gray-800;
 
   @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+    background-color: #f5f8fa;
+    background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+    background-size: 20px 20px;
+    color-scheme: light;
   }
 }

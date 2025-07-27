@@ -21,7 +21,7 @@ const CodeView = ({ schema }: CodeViewProps) => {
 
   return (
     <div className="relative">
-      <pre className="bg-gray-800 text-white p-4 rounded-lg overflow-x-auto">
+      <pre className="bg-gray-100 text-gray-800 p-4 rounded-lg overflow-x-auto border border-gray-200 text-sm">
         {JSON.stringify(
           (() => {
             const cleanSchema = JSON.parse(JSON.stringify(schema)); // Deep copy to avoid modifying original state
@@ -37,7 +37,7 @@ const CodeView = ({ schema }: CodeViewProps) => {
       </pre>
       <button
         onClick={handleCopy}
-        className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-2 rounded text-sm flex items-center"
+        className="absolute top-2 right-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-2 rounded text-sm flex items-center"
       >
         {copySuccess ? (
           'Copied!'
