@@ -3,27 +3,29 @@ import { Trash2 } from 'lucide-react';
 
 interface WidgetBoxProps {
   field: SchemaField;
-  onUpdateField: (oldId: string, updatedField: SchemaField) => void;
-  onDeleteField: (fieldId: string) => void;
+  onUpdateField: (oldInternalId: string, updatedField: SchemaField) => void;
+  onDeleteField: (internalId: string) => void;
 }
 
 const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
   const [localField, setLocalField] = useState<SchemaField>(field);
+  const [rawChoicesInput, setRawChoicesInput] = useState<string>(JSON.stringify(field.choices?.values || [], null, 2));
 
   useEffect(() => {
     setLocalField(field);
+    setRawChoicesInput(JSON.stringify(field.choices?.values || [], null, 2));
   }, [field]);
 
   useEffect(() => {
     // This effect runs when localField changes, and propagates the change to the parent
     // We need to ensure we're passing the original ID for the update operation
-    const oldId = field.id; // The ID of the field as it was when this WidgetBox was rendered
+    const oldInternalId = field._internalId; // The internalId of the field as it was when this WidgetBox was rendered
     const newId = localField.label.toLowerCase().replace(/\s+/g, '_');
     
     // Only call onUpdateField if there's an actual change to prevent infinite loops
     // or unnecessary updates.
-    if (oldId !== newId || JSON.stringify(field) !== JSON.stringify(localField)) {
-      onUpdateField(oldId, { ...localField, id: newId });
+    if (field.id !== newId || JSON.stringify(field) !== JSON.stringify(localField)) {
+      onUpdateField(oldInternalId!, { ...localField, id: newId });
     }
   }, [localField, onUpdateField, field]);
 
@@ -35,6 +37,7 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
         const newValidation = checked ? { required: true } : undefined;
         return { ...prev, validation: newValidation };
       } else if (name === 'choices') {
+        setRawChoicesInput(value);
         try {
           const parsedChoices = JSON.parse(value);
           return { ...prev, choices: { values: parsedChoices } };
@@ -69,7 +72,7 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
   return (
     <div className="relative bg-gradient-to-br from-white/50 to-white/10 backdrop-blur-2xl p-4 rounded-xl shadow-2xl shadow-gray-300/50 border border-white/30">
       <button
-        onClick={() => onDeleteField(field.id)}
+        onClick={() => onDeleteField(field._internalId!)}
         className="absolute top-4 right-3 text-red-400 hover:text-red-600 focus:outline-none group"
         aria-label="Delete Widget"
       >
@@ -151,12 +154,12 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
             )}
           </div>
         </div>
-        {localField.ui_options?.ui_widget === 'SelectWidget' && localField.originalName !== 'Dynamic Load Select' && (
+        {(localField.ui_options?.ui_widget === 'SelectWidget' || (localField.type === 'string' && localField.choices)) && localField.originalName !== 'Dynamic Load Select' && (
           <div className="col-span-full">
             <label className="block text-sm font-medium text-gray-500">Choices (JSON Array)</label>
             <textarea
               name="choices"
-              value={JSON.stringify(localField.choices?.values || [], null, 2)}
+              value={rawChoicesInput}
               onChange={handleChange}
               rows={6}
               className="mt-1 block w-full px-3 py-2 bg-white/30 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800 font-mono"

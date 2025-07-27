@@ -19,44 +19,45 @@ const BuilderView = ({ schema, setSchema }: BuilderViewProps) => {
       label: widget.name,
       ...(widget.description && { description: widget.description }),
       ...(widget.hasOwnProperty('default') && { default: widget.default }),
-      ...(widget.ui_widget && { ui_options: { ui_widget: widget.ui_widget } }),
+      ...(widget.ui_widget && { ui_options: { ui_widget: widget.ui_widget, ...(widget.ui_options || {}) } }),
       ...(widget.items && { items: widget.items }),
       ...(widget.choices && { choices: widget.choices }),
       ...(widget.allowed_app_types && { allowed_app_types: widget.allowed_app_types }),
       ...(widget.allowed_connection_management_types && { allowed_connection_management_types: widget.allowed_connection_management_types }),
+      ...(widget.content && { content: widget.content }),
     };
     setSchema((prevSchema) => ({
       ...prevSchema,
       fields: [...prevSchema.fields, newField],
       ui_options: {
         ...prevSchema.ui_options,
-        ui_order: [...(prevSchema.ui_options?.ui_order || []), newField.id],
+        ui_order: [...(prevSchema.ui_options?.ui_order || []), newField._internalId!],
       },
     }));
   };
 
-  const updateField = (oldId: string, updatedField: SchemaField) => {
+  const updateField = (oldInternalId: string, updatedField: SchemaField) => {
     setSchema((prevSchema) => ({
       ...prevSchema,
       fields: prevSchema.fields.map((field) =>
-        field.id === oldId ? updatedField : field
+        field._internalId === oldInternalId ? updatedField : field
       ),
       ui_options: {
         ...prevSchema.ui_options,
         ui_order: prevSchema.ui_options?.ui_order?.map((id) =>
-          id === oldId ? updatedField.id : id
+          id === oldInternalId ? updatedField._internalId! : id
         ),
       },
     }));
   };
 
-  const handleDeleteField = (fieldId: string) => {
+  const handleDeleteField = (internalId: string) => {
     setSchema((prevSchema) => ({
       ...prevSchema,
-      fields: prevSchema.fields.filter((field) => field.id !== fieldId),
+      fields: prevSchema.fields.filter((field) => field._internalId !== internalId),
       ui_options: {
         ...prevSchema.ui_options,
-        ui_order: prevSchema.ui_options?.ui_order?.filter((id) => id !== fieldId),
+        ui_order: prevSchema.ui_options?.ui_order?.filter((id) => id !== internalId),
       },
     }));
   };
@@ -82,17 +83,17 @@ const BuilderView = ({ schema, setSchema }: BuilderViewProps) => {
           const uiOrder = schema.ui_options?.ui_order;
 
           if (uiOrder) {
-            const fieldMap = new Map(schema.fields.map(field => [field.id, field]));
-            uiOrder.forEach(fieldId => {
-              const field = fieldMap.get(fieldId);
+            const fieldMap = new Map(schema.fields.map(field => [field._internalId!, field]));
+            uiOrder.forEach(fieldInternalId => {
+              const field = fieldMap.get(fieldInternalId);
               if (field) {
                 orderedFields.push(field);
-                fieldMap.delete(fieldId); // Remove from map once added to orderedFields
+                fieldMap.delete(fieldInternalId); // Remove from map once added to orderedFields
               }
             });
             // Add any fields not specified in ui_order
             schema.fields.forEach(field => {
-              if (fieldMap.has(field.id)) {
+              if (fieldMap.has(field._internalId!)) {
                 unorderedFields.push(field);
               }
             });

@@ -23,7 +23,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen text-gray-900">
-      <div className="container mx-auto p-4 pt-5">
+      <div className="container mx-auto p-4 pt-10 pb-10">
       <h1 className="text-3xl font-bold mb-4">Schema Builder</h1>
       <p className="mb-6 text-gray-600">
         Use the Schema Builder to visually create and manage your schema for Connector Modules.

@@ -5,7 +5,6 @@ const widgets = [
   {
     name: 'Text Input',
     type: 'string',
-    ui_widget: 'input',
     description: 'A single line text input field.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L14.732 3.732z" /></svg>
@@ -48,7 +47,6 @@ const widgets = [
   {
     name: 'Checkbox',
     type: 'boolean',
-    ui_widget: 'checkbox',
     description: 'A checkbox for boolean values.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -56,7 +54,7 @@ const widgets = [
   },
   {
     name: 'Select Dropdown',
-    type: 'object',
+    type: 'string',
     ui_widget: 'SelectWidget',
     description: 'A dropdown for selecting from a list of choices.',
     choices: {
@@ -73,6 +71,9 @@ const widgets = [
     name: 'Code Block',
     type: 'string',
     ui_widget: 'CodeblockWidget',
+    ui_options: {
+      language: 'json'
+    },
     description: 'A code editor for structured input.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
@@ -116,11 +117,22 @@ const widgets = [
   {
     name: 'Dynamic Load Select',
     type: 'string',
-    label: 'Dynamic_Select',
-    description: 'A dynamic dropdown for selecting from a list of choices after loading dynamic content.',
+    label: 'Dynamic Load Select',
     ui_widget: 'SelectWidget',
+    ui_options: {
+      refresh_on_click: true
+    },
+    description: 'A dynamic dropdown for selecting from a list of choices after loading dynamic content.',
     choices: {
       values: [
+      ]
+    },
+    content: {
+      type: ["managed"],
+      content_objects: [
+        {
+          id: "content_load_id"
+        }
       ]
     },
     icon: (
