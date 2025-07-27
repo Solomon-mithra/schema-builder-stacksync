@@ -124,7 +124,6 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
           <motion.input
             whileFocus={{ borderColor: '#3b82f6' }}
             transition={{ duration: 0.2 }}
-            transition={{ duration: 0.2 }}
             type="text"
             name="label"
             value={field.label}
@@ -147,7 +146,6 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
           </label>
           <motion.textarea
             whileFocus={{ borderColor: '#3b82f6' }}
-            transition={{ duration: 0.2 }}
             transition={{ duration: 0.2 }}
             name="description"
             value={field.description || ''}
