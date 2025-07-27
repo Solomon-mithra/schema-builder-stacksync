@@ -30,8 +30,8 @@ export default function Home() {
       </p>
       <div className="flex border-b border-gray-300 dark:border-gray-700">
         <button
-          className={`px-4 py-2 text-lg font-medium flex items-center ${activeTab === 'builder'
-            ? 'border-b-2 border-blue-500 text-blue-500'
+          className={`px-4 py-2 text-lg font-medium flex items-center cursor-pointer transition-all duration-200 ease-in-out ${activeTab === 'builder'
+            ? 'border-b border-blue-500 text-blue-500'
             : 'text-gray-600'
             }`}
             onClick={() => setActiveTab('builder')}
@@ -40,8 +40,8 @@ export default function Home() {
             Builder
           </button>
           <button
-            className={`px-4 py-2 text-lg font-medium flex items-center ${activeTab === 'code'
-              ? 'border-b-2 border-blue-500 text-blue-500'
+            className={`px-4 py-2 text-lg font-medium flex items-center cursor-pointer transition-all duration-200 ease-in-out ${activeTab === 'code'
+              ? 'border-b border-blue-500 text-blue-500'
               : 'text-gray-600'
             }`}
             onClick={() => setActiveTab('code')}
@@ -51,11 +51,12 @@ export default function Home() {
           </button>
         </div>
         <div className="pt-4">
-          {activeTab === 'builder' ? (
+          <div style={{ display: activeTab === 'builder' ? 'block' : 'none' }}>
             <BuilderView schema={schema} setSchema={setSchema} />
-          ) : (
+          </div>
+          <div style={{ display: activeTab === 'code' ? 'block' : 'none' }}>
             <CodeView schema={schema} />
-          )}
+          </div>
         </div>
       </div>
     </div>

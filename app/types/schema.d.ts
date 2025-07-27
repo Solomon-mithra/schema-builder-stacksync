@@ -11,6 +11,8 @@ interface SchemaField {
   choices?: { values: Array<{ value: any; label: string }> };
   validation?: { required?: boolean };
   on_action?: { load_schema?: boolean };
+  allowed_app_types?: string[];
+  allowed_connection_management_types?: string[];
   content?: { type: string[]; content_objects: { id: string }[] };
 }
 
