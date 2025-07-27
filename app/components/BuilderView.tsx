@@ -12,7 +12,7 @@ const BuilderView = ({ schema, setSchema }: BuilderViewProps) => {
 
   const addWidget = (widget: WidgetDefinition) => {
     const newField = {
-      _internalId: crypto.randomUUID(),
+      _internalId: Date.now().toString(36) + Math.random().toString(36).substring(2),
       id: widget.name.toLowerCase().replace(/\s+/g, '_'),
       originalName: widget.name,
       type: widget.type,
