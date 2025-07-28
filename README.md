@@ -8,19 +8,19 @@ This project features a visual schema builder, allowing users to intuitively des
 
 Design your schema by adding and configuring various widgets. The interface provides a clear overview of your schema structure.
 
-![Schema Builder View](schema_builder.png)
+![Schema Builder View](builder.png)
 
 ### Add Widget Modal
 
 Easily add new fields to your schema using a modal that lists available widget types. This modal features a search function for quick access.
 
-![Add Widget Modal](add_widget.png)
+![Add Widget Modal](add_widgets.png)
 
 ### Code View
 
 View the generated JSON schema in real-time as you build it visually. The code is formatted for readability and can be easily copied.
 
-![Schema Code View](schema_code.png)
+![Schema Code View](code.png)
 
 ## Getting Started
 
