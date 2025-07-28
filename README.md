@@ -2,7 +2,7 @@
 
 url: https://solomon-mithra.github.io/schema-builder-stacksync/
 
-This project features a visual schema builder, allowing users to intuitively design and manage data schemas through a user-friendly interface. The generated schema can be viewed and copied in JSON format.
+This project features a visual schema builder for Stacksync connector modules, allowing users to intuitively design and manage through a user-friendly interface. The generated schema can be viewed and copied in JSON format.
 
 ### Visual Builder
 
