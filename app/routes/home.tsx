@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import type { Route } from './+types/home';
-import BuilderView from '~/components/BuilderView';
-import CodeView from '~/components/CodeView';
+import BuilderView from '~/views/BuilderView';
+import CodeView from '~/views/CodeView';
 import '~/types/schema.d'; // Import the type definition
+import { SchemaProvider } from '~/state/SchemaProvider';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,15 +12,8 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
+const Home = () => {
   const [activeTab, setActiveTab] = useState('builder');
-  const [schema, setSchema] = useState<Schema>({
-    metadata: {
-      workflows_module_schema_version: '1.0.0',
-    },
-    fields: [],
-    ui_options: {},
-  });
 
   return (
     <div className="min-h-screen text-gray-900">
@@ -52,13 +46,21 @@ export default function Home() {
         </div>
         <div className="pt-4">
           <div style={{ display: activeTab === 'builder' ? 'block' : 'none' }}>
-            <BuilderView schema={schema} setSchema={setSchema} />
+            <BuilderView />
           </div>
           <div style={{ display: activeTab === 'code' ? 'block' : 'none' }}>
-            <CodeView schema={schema} />
+            <CodeView />
           </div>
         </div>
       </div>
     </div>
+  );
+};
+
+export default function HomeWrapper() {
+  return (
+    <SchemaProvider>
+      <Home />
+    </SchemaProvider>
   );
 }

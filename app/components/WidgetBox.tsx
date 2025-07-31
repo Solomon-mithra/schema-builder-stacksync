@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+
 interface WidgetBoxProps {
   field: SchemaField;
   onUpdateField: (oldInternalId: string, updatedField: SchemaField) => void;
@@ -30,7 +31,14 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
     const newId = (updatedField.label || field.label)
       .toLowerCase()
       .replace(/\s+/g, '_');
-    onUpdateField(field._internalId!, { ...field, ...updatedField, id: newId });
+
+    const updatedFieldWithId = { ...field, ...updatedField, id: newId };
+
+    if (updatedFieldWithId.content?.content_objects?.[0]) {
+      updatedFieldWithId.content.content_objects[0].id = `content_${newId}`;
+    }
+
+    onUpdateField(field._internalId!, updatedFieldWithId);
   };
 
   const handleChange = (
@@ -48,17 +56,16 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
         validation: checked ? { required: true } : undefined,
       });
     } else if (name === 'dynamic') {
-      const newItems = checked
-        ? {
-            type: 'string',
-            label: 'default',
-            content: {
-              type: ['managed'],
-              content_objects: [{ id: 'default_feild' }],
-            },
-          }
-        : { type: 'string', label: 'Value' };
-      handleFieldChange({ items: newItems });
+      if (checked) {
+        handleFieldChange({
+          content: {
+            type: ['managed'],
+            content_objects: [{ id: `content_${field.id}` }],
+          },
+        });
+      } else {
+        handleFieldChange({ content: undefined });
+      }
     } else if (name === 'load_schema') {
       handleFieldChange({
         on_action: checked ? { load_schema: true } : undefined,
@@ -154,7 +161,7 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
           ></motion.textarea>
         </div>
         <div>
-          <div className="flex items-center">
+          <div className="flex items-center mb-1">
             <input
               type="checkbox"
               name="required"
@@ -169,25 +176,8 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
               Required
             </label>
           </div>
-          {field.type === 'array' && field.items?.type === 'string' && (
-            <div className="flex items-center mt-2">
-              <input
-                type="checkbox"
-                name="dynamic"
-                checked={!!field.items?.content}
-                onChange={handleCheckboxChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="dynamic"
-                className="ml-2 block text-sm text-gray-800"
-              >
-                Dynamic
-              </label>
-            </div>
-          )}
-          <div className="flex items-center mt-2">
-            {field.ui__options?.ui_widget === 'SelectWidget' &&
+          <div className="flex items-center ">
+            {field.ui_options?.ui_widget === 'SelectWidget' &&
               field.originalName !== 'Dynamic Load Select' && (
                 <>
                   <input
@@ -206,6 +196,23 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
                 </>
               )}
           </div>
+          {field.type === 'array' && (
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                name="dynamic"
+                checked={!!field.content}
+                onChange={handleCheckboxChange}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="dynamic"
+                className="ml-2 block text-sm text-gray-800"
+              >
+                Dynamic
+              </label>
+            </div>
+          )}
         </div>
         {(field.ui_options?.ui_widget === 'SelectWidget' ||
           (field.type === 'string' && field.choices)) &&
@@ -245,4 +252,3 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
 };
 
 export default WidgetBox;
-

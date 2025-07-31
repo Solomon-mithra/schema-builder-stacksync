@@ -7,7 +7,7 @@ interface SchemaField {
   description?: string;
   default?: any;
   ui_options?: { ui_widget?: string; language?: string; refresh_on_click?: boolean; };
-  items?: { type: string; fields?: SchemaField[]; content?: any; };
+  items?: { type: string; label: string; fields?: SchemaField[]; };
   choices?: { values: Array<{ value: any; label: string }> };
   validation?: { required?: boolean };
   on_action?: { load_schema?: boolean };
@@ -32,7 +32,7 @@ interface WidgetDefinition {
   description?: string;
   default?: any;
   icon?: JSX.Element;
-  items?: { type: string; fields?: SchemaField[]; content?: any; };
+  items?: { type: string; label: string; fields?: SchemaField[]; };
   choices?: { values: Array<{ value: any; label: string }> };
   content?: { type: string[]; content_objects: { id: string }[] };
   allowed_app_types?: string[];

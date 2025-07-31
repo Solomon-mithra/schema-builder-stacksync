@@ -1,31 +1,12 @@
 import { useState } from 'react';
+import { useSchema } from '~/hooks/useSchema';
 
-interface CodeViewProps {
-  schema: Schema;
-}
-
-const getCleanSchema = (schema: Schema) => {
-  const cleanSchema = JSON.parse(JSON.stringify(schema)); // Deep copy to avoid modifying original state
-  const idMap = new Map<string, string>();
-
-  cleanSchema.fields.forEach((field: any) => {
-    idMap.set(field._internalId, field.id);
-    delete field._internalId;
-    delete field.originalName;
-  });
-
-  if (cleanSchema.ui_options?.ui_order) {
-    cleanSchema.ui_options.ui_order = cleanSchema.ui_options.ui_order.map((internalId: string) => idMap.get(internalId) || internalId);
-  }
-
-  return cleanSchema;
-};
-
-const CodeView = ({ schema }: CodeViewProps) => {
+const CodeView = () => {
+  const { schema, cleanSchema } = useSchema();
   const [copySuccess, setCopySuccess] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(JSON.stringify(getCleanSchema(schema), null, 2)).then(
+    navigator.clipboard.writeText(JSON.stringify(cleanSchema(schema), null, 2)).then(
       () => {
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
@@ -39,7 +20,7 @@ const CodeView = ({ schema }: CodeViewProps) => {
   return (
     <div className="relative">
       <pre className="bg-gray-100 text-gray-800 p-4 rounded-lg overflow-x-auto border border-gray-200 text-sm">
-        {JSON.stringify(getCleanSchema(schema), null, 2)}
+        {JSON.stringify(cleanSchema(schema), null, 2)}
       </pre>
       <button
         onClick={handleCopy}
