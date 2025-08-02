@@ -90,7 +90,7 @@ export const widgets = [
   {
     name: 'String Array',
     type: 'array',
-    items: { type: 'string', label: 'Value' },
+    items: [],
     description: 'An array of string values.',
     dynamic: false,
     content: {
@@ -108,14 +108,7 @@ export const widgets = [
   {
     name: 'Object Array',
     type: 'array',
-    items: { type: 'object', fields: [
-      {
-        id: "default",
-        type: "string",
-        label: "Default"
-      }
-    ], label: 'Item' },
-    description: 'An array of object values.',
+    items: { type: 'object', fields: [], label: 'Item' },
     content: {
       type: ["managed"],
       content_objects: [

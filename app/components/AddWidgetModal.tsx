@@ -8,15 +8,18 @@ interface AddWidgetModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddWidget: (widget: WidgetDefinition) => void;
+  excludeTypes?: string[];
 }
 
-const AddWidgetModal = ({ isOpen, onClose, onAddWidget }: AddWidgetModalProps) => {
+const AddWidgetModal = ({ isOpen, onClose, onAddWidget, excludeTypes = [] }: AddWidgetModalProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   if (!isOpen) return null;
 
-  const filteredWidgets = widgets.filter((widget) =>
-    widget.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredWidgets = widgets.filter(
+    (widget) =>
+      widget.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !excludeTypes.includes(widget.type)
   );
 
   return (
@@ -34,7 +37,7 @@ const AddWidgetModal = ({ isOpen, onClose, onAddWidget }: AddWidgetModalProps) =
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-6 w-full max-w-lg"
+            className="bg-white backdrop-blur-sm rounded-lg shadow-lg p-6 w-full max-w-lg"
             onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
           >
             <h2 className="text-xl font-bold mb-4 text-gray-800">Add Widget</h2>
@@ -59,7 +62,7 @@ const AddWidgetModal = ({ isOpen, onClose, onAddWidget }: AddWidgetModalProps) =
                 <motion.div
                   key={widget.name}
                   whileHover={{ scale: 1.05 }}
-                  className="flex items-center p-2 rounded-md cursor-pointer bg-gray-100 hover:bg-gray-200"
+                  className="flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-100"
                   onClick={() => {
                     onAddWidget(widget);
                     onClose();

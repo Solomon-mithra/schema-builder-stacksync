@@ -7,7 +7,7 @@ interface SchemaField {
   description?: string;
   default?: any;
   ui_options?: { ui_widget?: string; language?: string; refresh_on_click?: boolean; };
-  items?: { type: string; label: string; fields?: SchemaField[]; };
+  items?: { type: string; label: string; fields?: SchemaField[]; } | Array<{ type: string; label: string; description: string }>;
   choices?: { values: Array<{ value: any; label: string }> };
   validation?: { required?: boolean };
   on_action?: { load_schema?: boolean };

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, PlusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import AddWidgetModal from './AddWidgetModal';
+import NestedFieldBox from './NestedFieldBox';
 
 
 interface WidgetBoxProps {
@@ -16,6 +18,16 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
   const [rawAllowedAppTypesInput, setRawAllowedAppTypesInput] = useState<string>(
     () => JSON.stringify(field.allowed_app_types || [], null, 2)
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [stringArrayValues, setStringArrayValues] = useState<string[]>(() =>
+    Array.isArray(field.default) ? field.default : []
+  );
+
+  useEffect(() => {
+    if (field.type === 'array' && field.items?.type === 'string') {
+      setStringArrayValues(Array.isArray(field.default) ? field.default : []);
+    }
+  }, [field.default, field.type, field.items?.type]);
 
   useEffect(() => {
     setRawChoicesInput(JSON.stringify(field.choices?.values || [], null, 2));
@@ -100,6 +112,45 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
     }
   };
 
+  const handleAddNestedField = (widget: WidgetDefinition) => {
+    const newField: SchemaField = {
+      _internalId: `${field._internalId}-nested-${Date.now()}`,
+      id: widget.name.toLowerCase().replace(/\s+/g, '_'),
+      originalName: widget.name,
+      type: widget.type,
+      label: widget.name,
+      description: widget.description,
+      ui_options: widget.ui_options,
+      choices: widget.choices,
+      content: widget.content,
+      allowed_app_types: widget.allowed_app_types,
+      allowed_connection_management_types: widget.allowed_connection_management_types,
+    };
+    delete newField.default;
+
+    const updatedItems = {
+      ...field.items,
+      fields: [...(field.items?.fields || []), newField],
+    };
+    handleFieldChange({ items: updatedItems });
+  };
+
+  const handleDeleteNestedField = (nestedFieldInternalId: string) => {
+    const updatedFields = field.items?.fields?.filter(
+      (f) => f._internalId !== nestedFieldInternalId
+    );
+    const updatedItems = { ...field.items, fields: updatedFields };
+    handleFieldChange({ items: updatedItems });
+  };
+
+  const handleUpdateNestedField = (updatedNestedField: SchemaField) => {
+    const updatedFields = field.items?.fields?.map((f) =>
+      f._internalId === updatedNestedField._internalId ? updatedNestedField : f
+    );
+    const updatedItems = { ...field.items, fields: updatedFields };
+    handleFieldChange({ items: updatedItems });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -109,13 +160,10 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
     >
       <button
         onClick={() => onDeleteField(field._internalId!)}
-        className="absolute top-4 right-3 text-red-400 hover:text-red-600 focus:outline-none group"
+        className="absolute top-4 right-3 text-red-400 hover:text-red-600 focus:outline-none cursor-pointer"
         aria-label="Delete Widget"
       >
-        <Trash2
-          className="w-5 h-5 stroke-current group-hover:fill-current"
-          strokeWidth={1.5}
-        />
+        <Trash2 className="w-5 h-5" />
       </button>
       <div className="font-bold text-lg mb-2 text-gray-800 flex items-center">
         {field.label}
@@ -243,6 +291,108 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
               onChange={handleAllowedAppTypesChange}
               rows={3}
               className="mt-1 block w-full px-3 py-2 bg-white/30 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800 font-mono"
+            />
+          </div>
+        )}
+        {field.type === 'array' && field.items && Array.isArray(field.items) && field.items.every((item: any) => item.type === 'string') && (
+          <div className="col-span-full">
+            <h3 className="text-md font-semibold text-gray-700 mt-4 mb-2">
+              Nested Fields
+            </h3>
+            <div className="grid gap-3">
+              {stringArrayValues.map((item, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <div className="flex-grow">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Label
+                    </label>
+                    <input
+                      type="text"
+                      value={item.label}
+                      onChange={(e) => {
+                        const newValues = [...stringArrayValues];
+                        newValues[index] = { ...item, label: e.target.value };
+                        setStringArrayValues(newValues);
+                        handleFieldChange({ items: newValues });
+                      }}
+                      className="block w-full px-2 py-1 bg-white/80 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800"
+                    />
+                    <label className="block text-xs font-medium text-gray-500 mb-1 mt-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={item.description}
+                      onChange={(e) => {
+                        const newValues = [...stringArrayValues];
+                        newValues[index] = { ...item, description: e.target.value };
+                        setStringArrayValues(newValues);
+                        handleFieldChange({ items: newValues });
+                      }}
+                      className="block w-full px-2 py-1 bg-white/80 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800"
+                      rows={2}
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      const newValues = stringArrayValues.filter((_, i) => i !== index);
+                      setStringArrayValues(newValues);
+                      handleFieldChange({ items: newValues });
+                    }}
+                    className="text-red-400 hover:text-red-600 focus:outline-none p-2 cursor-pointer"
+                    aria-label="Delete Value"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => {
+                const newValues = [...stringArrayValues, { type: 'string', label: 'New Value', description: '' }];
+                setStringArrayValues(newValues);
+                handleFieldChange({ items: newValues });
+              }}
+              className="mt-3 flex items-center text-blue-600 hover:text-blue-800 font-semibold"
+            >
+              <PlusCircle size={18} className="mr-2" />
+              Add Field
+            </button>
+          </div>
+        )}
+        {field.type === 'array' && field.items?.type === 'object' && (
+          <div className="col-span-full">
+            <h3 className="text-md font-semibold text-gray-700 mt-4 mb-2">
+              Nested Fields
+            </h3>
+            <div className="grid gap-3">
+              {field.items.fields?.map((nestedField) => (
+                <div key={nestedField._internalId} className="flex items-center gap-3">
+                  <NestedFieldBox
+                    nestedField={nestedField}
+                    onUpdate={handleUpdateNestedField}
+                  />
+                  <button
+                    onClick={() => handleDeleteNestedField(nestedField._internalId!)}
+                    className="text-red-400 hover:text-red-600 focus:outline-none p-2 cursor-pointer"
+                    aria-label="Delete Nested Field"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="mt-3 flex items-center text-blue-600 hover:text-blue-800 font-semibold"
+            >
+              <PlusCircle size={18} className="mr-2" />
+              Add Nested Field
+            </button>
+            <AddWidgetModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onAddWidget={handleAddNestedField}
+              excludeTypes={['connection', 'array']}
             />
           </div>
         )}
