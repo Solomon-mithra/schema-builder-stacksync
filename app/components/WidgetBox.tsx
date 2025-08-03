@@ -19,15 +19,9 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
     () => JSON.stringify(field.allowed_app_types || [], null, 2)
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [stringArrayValues, setStringArrayValues] = useState<string[]>(() =>
-    Array.isArray(field.default) ? field.default : []
-  );
+  const [stringArrayValues, setStringArrayValues] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (field.type === 'array' && field.items?.type === 'string') {
-      setStringArrayValues(Array.isArray(field.default) ? field.default : []);
-    }
-  }, [field.default, field.type, field.items?.type]);
+  
 
   useEffect(() => {
     setRawChoicesInput(JSON.stringify(field.choices?.values || [], null, 2));
@@ -120,7 +114,9 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
       type: widget.type,
       label: widget.name,
       description: widget.description,
-      ui_options: widget.ui_options,
+      ui_options: widget.ui_widget
+        ? { ...(widget.ui_options || {}), ui_widget: widget.ui_widget }
+        : widget.ui_options,
       choices: widget.choices,
       content: widget.content,
       allowed_app_types: widget.allowed_app_types,
@@ -294,71 +290,30 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
             />
           </div>
         )}
-        {field.type === 'array' && field.items && Array.isArray(field.items) && field.items.every((item: any) => item.type === 'string') && (
-          <div className="col-span-full">
-            <h3 className="text-md font-semibold text-gray-700 mt-4 mb-2">
-              Nested Fields
-            </h3>
-            <div className="grid gap-3">
-              {stringArrayValues.map((item, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="flex-grow">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
-                      Label
-                    </label>
-                    <input
-                      type="text"
-                      value={item.label}
-                      onChange={(e) => {
-                        const newValues = [...stringArrayValues];
-                        newValues[index] = { ...item, label: e.target.value };
-                        setStringArrayValues(newValues);
-                        handleFieldChange({ items: newValues });
-                      }}
-                      className="block w-full px-2 py-1 bg-white/80 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800"
-                    />
-                    <label className="block text-xs font-medium text-gray-500 mb-1 mt-2">
-                      Description
-                    </label>
-                    <textarea
-                      value={item.description}
-                      onChange={(e) => {
-                        const newValues = [...stringArrayValues];
-                        newValues[index] = { ...item, description: e.target.value };
-                        setStringArrayValues(newValues);
-                        handleFieldChange({ items: newValues });
-                      }}
-                      className="block w-full px-2 py-1 bg-white/80 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-800"
-                      rows={2}
-                    />
-                  </div>
-                  <button
-                    onClick={() => {
-                      const newValues = stringArrayValues.filter((_, i) => i !== index);
-                      setStringArrayValues(newValues);
-                      handleFieldChange({ items: newValues });
-                    }}
-                    className="text-red-400 hover:text-red-600 focus:outline-none p-2 cursor-pointer"
-                    aria-label="Delete Value"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              ))}
+        {field.type === 'array' &&
+          field.originalName === 'String Array' && (
+            <div className="col-span-full">
+              <label className="block text-sm font-medium text-gray-500">
+                Item Label
+              </label>
+              <motion.input
+                whileFocus={{ borderColor: '#3b82f6' }}
+                transition={{ duration: 0.2 }}
+                type="text"
+                value={field.items?.label || ''}
+                onChange={(e) =>
+                  handleFieldChange({
+                    items: {
+                      ...field.items,
+                      type: 'string',
+                      label: e.target.value,
+                    },
+                  })
+                }
+                className="mt-1 block w-full px-3 py-2 bg-white/30 border border-gray-300 rounded-md focus:outline-none sm:text-sm text-gray-800"
+              />
             </div>
-            <button
-              onClick={() => {
-                const newValues = [...stringArrayValues, { type: 'string', label: 'New Value', description: '' }];
-                setStringArrayValues(newValues);
-                handleFieldChange({ items: newValues });
-              }}
-              className="mt-3 flex items-center text-blue-600 hover:text-blue-800 font-semibold"
-            >
-              <PlusCircle size={18} className="mr-2" />
-              Add Field
-            </button>
-          </div>
-        )}
+          )}
         {field.type === 'array' && field.items?.type === 'object' && (
           <div className="col-span-full">
             <h3 className="text-md font-semibold text-gray-700 mt-4 mb-2">
@@ -393,6 +348,7 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
               onClose={() => setIsModalOpen(false)}
               onAddWidget={handleAddNestedField}
               excludeTypes={['connection', 'array']}
+              position="bottom"
             />
           </div>
         )}

@@ -90,7 +90,7 @@ export const widgets = [
   {
     name: 'String Array',
     type: 'array',
-    items: [],
+    items: { type: 'string', label: '' },
     description: 'An array of string values.',
     dynamic: false,
     content: {

@@ -39,7 +39,9 @@ export const SchemaProvider = ({ children }: SchemaProviderProps) => {
         delete field._internalId;
         delete field.originalName;
 
-        if (field.type === 'array' && field.items?.type === 'object' && field.items.fields) {
+        if (field.originalName === 'String Array') {
+          field.items = { type: 'string', label: field.items.label };
+        } else if (field.type === 'array' && field.items?.type === 'object' && field.items.fields) {
           cleanFields(field.items.fields);
         } else if (field.type === 'array' && Array.isArray(field.items)) {
           // For String Array where items is an array of field definitions

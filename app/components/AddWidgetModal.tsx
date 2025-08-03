@@ -9,9 +9,16 @@ interface AddWidgetModalProps {
   onClose: () => void;
   onAddWidget: (widget: WidgetDefinition) => void;
   excludeTypes?: string[];
+  position?: 'center' | 'bottom';
 }
 
-const AddWidgetModal = ({ isOpen, onClose, onAddWidget, excludeTypes = [] }: AddWidgetModalProps) => {
+const AddWidgetModal = ({
+  isOpen,
+  onClose,
+  onAddWidget,
+  excludeTypes = [],
+  position = 'center',
+}: AddWidgetModalProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   if (!isOpen) return null;
@@ -22,6 +29,16 @@ const AddWidgetModal = ({ isOpen, onClose, onAddWidget, excludeTypes = [] }: Add
       !excludeTypes.includes(widget.type)
   );
 
+  const modalContainerClasses =
+    position === 'bottom'
+      ? 'items-end'
+      : 'items-center';
+  
+  const modalDialogClasses = 
+    position === 'bottom'
+      ? 'mb-12'
+      : '';
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -29,7 +46,7 @@ const AddWidgetModal = ({ isOpen, onClose, onAddWidget, excludeTypes = [] }: Add
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50"
+          className={`fixed inset-0 bg-black/20 backdrop-blur-sm flex justify-center z-50 ${modalContainerClasses}`}
           onClick={onClose} // Close modal when clicking outside
         >
           <motion.div
@@ -37,7 +54,7 @@ const AddWidgetModal = ({ isOpen, onClose, onAddWidget, excludeTypes = [] }: Add
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-white backdrop-blur-sm rounded-lg shadow-lg p-6 w-full max-w-lg"
+            className={`bg-white backdrop-blur-sm rounded-lg shadow-lg p-6 w-full max-w-lg ${modalDialogClasses}`}
             onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
           >
             <h2 className="text-xl font-bold mb-4 text-gray-800">Add Widget</h2>
