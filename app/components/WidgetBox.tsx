@@ -68,9 +68,13 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
             type: ['managed'],
             content_objects: [{ id: `content_${field.id}` }],
           },
+          choices: { values: [] },
         });
       } else {
-        handleFieldChange({ content: undefined });
+        handleFieldChange({
+          content: undefined,
+          choices: { values: [{ value: 'default', label: 'Default' }] },
+        });
       }
     } else if (name === 'load_schema') {
       handleFieldChange({
@@ -221,9 +225,9 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
             </label>
           </div>
           <div className="flex items-center ">
-            {field.ui_options?.ui_widget === 'SelectWidget' &&
-              field.originalName !== 'Dynamic Load Select' && (
-                <>
+            {field.ui_options?.ui_widget === 'SelectWidget' && (
+              <div className="flex flex-col">
+                <div className="flex items-center">
                   <input
                     type="checkbox"
                     name="load_schema"
@@ -237,8 +241,24 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
                   >
                     Load Schema on Change
                   </label>
-                </>
-              )}
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="dynamic"
+                    checked={!!field.content}
+                    onChange={handleCheckboxChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="dynamic"
+                    className="ml-2 block text-sm text-gray-800"
+                  >
+                    Dynamic
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
           {field.type === 'array' && (
             <div className="flex items-center">
@@ -259,8 +279,7 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
           )}
         </div>
         {(field.ui_options?.ui_widget === 'SelectWidget' ||
-          (field.type === 'string' && field.choices)) &&
-          field.originalName !== 'Dynamic Load Select' && (
+          (field.type === 'string' && field.choices)) && !field.content && (
             <div className="col-span-full">
               <label className="block text-sm font-medium text-gray-500">
                 Choices (JSON Array)
