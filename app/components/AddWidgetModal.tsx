@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { widgets } from '~/config/widgets';
+import type { WidgetDefinition } from '../types/schema';
 
 interface AddWidgetModalProps {
   isOpen: boolean;

@@ -1,4 +1,5 @@
 import { createContext, useState } from 'react';
+import type { Schema, SchemaField } from '../types/schema';
 
 interface SchemaProviderProps {
   children: React.ReactNode;
@@ -34,14 +35,14 @@ export const SchemaProvider = ({ children }: SchemaProviderProps) => {
     const idMap = new Map<string, string>();
 
     const cleanFields = (fields: SchemaField[]) => {
-      fields.forEach((field: any) => {
-        idMap.set(field._internalId, field.id);
+      fields.forEach((field: SchemaField) => {
+        idMap.set(field._internalId!, field.id);
         delete field._internalId;
         delete field.originalName;
 
         if (field.originalName === 'String Array') {
-          field.items = { type: 'string', label: field.items.label };
-        } else if (field.type === 'array' && field.items?.type === 'object' && field.items.fields) {
+          field.items = { type: 'string', label: (field.items as { label: string }).label };
+        } else if (field.type === 'array' && field.items && !Array.isArray(field.items) && field.items.type === 'object' && field.items.fields) {
           cleanFields(field.items.fields);
         } else if (field.type === 'array' && Array.isArray(field.items)) {
           // For String Array where items is an array of field definitions

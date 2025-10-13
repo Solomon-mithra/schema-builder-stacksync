@@ -3,6 +3,7 @@ import AddWidgetModal from '~/components/AddWidgetModal';
 import WidgetBox from '~/components/WidgetBox';
 import { useSchema } from '~/hooks/useSchema';
 import { useSchemaManager } from '~/hooks/useSchemaManager';
+import type { SchemaField } from '../types/schema';
 
 const BuilderView = () => {
   const { schema } = useSchema();
@@ -30,8 +31,8 @@ const BuilderView = () => {
           const uiOrder = schema.ui_options?.ui_order;
 
           if (uiOrder) {
-            const fieldMap = new Map(schema.fields.map(field => [field._internalId!, field]));
-            uiOrder.forEach(fieldInternalId => {
+            const fieldMap = new Map(schema.fields.map((field: SchemaField) => [field._internalId!, field]));
+            uiOrder.forEach((fieldInternalId: string) => {
               const field = fieldMap.get(fieldInternalId);
               if (field) {
                 orderedFields.push(field);
@@ -39,7 +40,7 @@ const BuilderView = () => {
               }
             });
             // Add any fields not specified in ui_order
-            schema.fields.forEach(field => {
+            schema.fields.forEach((field: SchemaField) => {
               if (fieldMap.has(field._internalId!)) {
                 unorderedFields.push(field);
               }

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import type { SchemaField } from '../types/schema';
 
 interface NestedFieldBoxProps {
   nestedField: SchemaField;

@@ -3,7 +3,7 @@ import { Trash2, PlusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AddWidgetModal from './AddWidgetModal';
 import NestedFieldBox from './NestedFieldBox';
-
+import type { SchemaField, WidgetDefinition } from '../types/schema';
 
 interface WidgetBoxProps {
   field: SchemaField;
@@ -128,26 +128,26 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
     };
     delete newField.default;
 
+    // Ensure items has the required `type` and `label` properties per SchemaField.items union
+    const baseItems = (field.items && !Array.isArray(field.items)) ? field.items : { type: 'object', label: 'Items' };
     const updatedItems = {
-      ...field.items,
-      fields: [...(field.items?.fields || []), newField],
-    };
+      ...baseItems,
+      fields: [...(baseItems.fields || []), newField],
+    } as { type: string; label: string; fields: SchemaField[] };
     handleFieldChange({ items: updatedItems });
   };
 
   const handleDeleteNestedField = (nestedFieldInternalId: string) => {
-    const updatedFields = field.items?.fields?.filter(
-      (f) => f._internalId !== nestedFieldInternalId
-    );
-    const updatedItems = { ...field.items, fields: updatedFields };
+    const currentItems = (field.items && !Array.isArray(field.items)) ? field.items : undefined;
+    const updatedFields = currentItems?.fields ? currentItems.fields.filter((f: SchemaField) => f._internalId !== nestedFieldInternalId) : [];
+    const updatedItems = { ...(currentItems || { type: 'object', label: 'Items' }), fields: updatedFields } as { type: string; label: string; fields: SchemaField[] };
     handleFieldChange({ items: updatedItems });
   };
 
   const handleUpdateNestedField = (updatedNestedField: SchemaField) => {
-    const updatedFields = field.items?.fields?.map((f) =>
-      f._internalId === updatedNestedField._internalId ? updatedNestedField : f
-    );
-    const updatedItems = { ...field.items, fields: updatedFields };
+    const currentItems = (field.items && !Array.isArray(field.items)) ? field.items : undefined;
+    const updatedFields = currentItems?.fields ? currentItems.fields.map((f: SchemaField) => f._internalId === updatedNestedField._internalId ? updatedNestedField : f) : [updatedNestedField];
+    const updatedItems = { ...(currentItems || { type: 'object', label: 'Items' }), fields: updatedFields } as { type: string; label: string; fields: SchemaField[] };
     handleFieldChange({ items: updatedItems });
   };
 
@@ -310,7 +310,8 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
           </div>
         )}
         {field.type === 'array' &&
-          field.originalName === 'String Array' && (
+          field.originalName === 'String Array' &&
+          field.items && !Array.isArray(field.items) && (
             <div className="col-span-full">
               <label className="block text-sm font-medium text-gray-500">
                 Item Label
@@ -319,11 +320,11 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
                 whileFocus={{ borderColor: '#3b82f6' }}
                 transition={{ duration: 0.2 }}
                 type="text"
-                value={field.items?.label || ''}
+                value={field.items.label || ''}
                 onChange={(e) =>
                   handleFieldChange({
                     items: {
-                      ...field.items,
+                      ...(field.items && !Array.isArray(field.items) ? field.items : {}),
                       type: 'string',
                       label: e.target.value,
                     },
@@ -333,13 +334,13 @@ const WidgetBox = ({ field, onUpdateField, onDeleteField }: WidgetBoxProps) => {
               />
             </div>
           )}
-        {field.type === 'array' && field.items?.type === 'object' && (
+        {field.type === 'array' && field.items && !Array.isArray(field.items) && field.items.type === 'object' && (
           <div className="col-span-full">
             <h3 className="text-md font-semibold text-gray-700 mt-4 mb-2">
               Nested Fields
             </h3>
             <div className="grid gap-3">
-              {field.items.fields?.map((nestedField) => (
+              {field.items.fields?.map((nestedField: SchemaField) => (
                 <div key={nestedField._internalId} className="flex items-center gap-3">
                   <NestedFieldBox
                     nestedField={nestedField}

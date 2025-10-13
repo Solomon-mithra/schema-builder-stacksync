@@ -1,4 +1,5 @@
 import { useSchema } from './useSchema';
+import type { WidgetDefinition, SchemaField, Schema } from '../types/schema';
 
 export const useSchemaManager = () => {
   const { schema, setSchema } = useSchema();
@@ -19,7 +20,7 @@ export const useSchemaManager = () => {
       ...(widget.allowed_connection_management_types && { allowed_connection_management_types: widget.allowed_connection_management_types }),
       ...(widget.content && { content: widget.content }),
     };
-    setSchema((prevSchema) => ({
+    setSchema((prevSchema: Schema) => ({
       ...prevSchema,
       fields: [...prevSchema.fields, newField],
       ui_options: {
@@ -30,14 +31,14 @@ export const useSchemaManager = () => {
   };
 
   const updateField = (oldInternalId: string, updatedField: SchemaField) => {
-    setSchema((prevSchema) => ({
+    setSchema((prevSchema: Schema) => ({
       ...prevSchema,
       fields: prevSchema.fields.map((field) =>
         field._internalId === oldInternalId ? updatedField : field
       ),
       ui_options: {
         ...prevSchema.ui_options,
-        ui_order: prevSchema.ui_options?.ui_order?.map((id) =>
+        ui_order: prevSchema.ui_options?.ui_order?.map((id: string) =>
           id === oldInternalId ? updatedField._internalId! : id
         ),
       },
@@ -45,12 +46,12 @@ export const useSchemaManager = () => {
   };
 
   const deleteField = (internalId: string) => {
-    setSchema((prevSchema) => ({
+    setSchema((prevSchema: Schema) => ({
       ...prevSchema,
       fields: prevSchema.fields.filter((field) => field._internalId !== internalId),
       ui_options: {
         ...prevSchema.ui_options,
-        ui_order: prevSchema.ui_options?.ui_order?.filter((id) => id !== internalId),
+        ui_order: prevSchema.ui_options?.ui_order?.filter((id: string) => id !== internalId),
       },
     }));
   };
