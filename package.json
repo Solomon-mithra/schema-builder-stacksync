@@ -6,6 +6,7 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "serve build/client",
+    "preview": "vite preview",
     "typecheck": "react-router typegen && tsc",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build/client"
