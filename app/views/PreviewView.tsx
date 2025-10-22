@@ -99,6 +99,13 @@ const renderField = (field: SchemaField) => {
           <input type="number" id={field.id} name={field.id} className="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none sm:text-sm text-gray-800" />
         </div>
       );
+    case 'integer':
+      return (
+        <div key={field.id} className="mb-4">
+          <label htmlFor={field.id} className="block text-sm font-medium text-gray-700">{field.label}</label>
+          <input type="number" step="1" id={field.id} name={field.id} className="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none sm:text-sm text-gray-800" />
+        </div>
+      );
     case 'boolean':
       return (
         <div key={field.id} className="mb-4 flex items-center">
